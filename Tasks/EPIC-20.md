@@ -1,13 +1,14 @@
-# EPIC-20 · Release Packaging
+# EPIC-20 · LLM Interpreter
 
-**Phase:** Phase 4 — Release
+**Phase:** Phase 3 — Beta
 
 > **Status legend:** `[ ]` To do · `[~]` In progress · `[x]` Done
 
 ## Tasks
 
-- [ ] Define minimum supported Unity version and document it
-- [ ] Build and test Windows desktop release
-- [ ] Build and test macOS desktop release
-- [ ] Write player-facing documentation (getting started, how to mod)
-- [ ] Tag `v1.0.0` release on GitHub
+- [ ] Define interpreter system prompt — constraints, output schema, rejection criteria
+- [ ] Implement LLM API client (local inference or self-hosted backend, configurable)
+- [ ] Implement natural language → Action JSON pipeline
+- [ ] Implement output validator — rejects any LLM response that fails action schema
+- [ ] Implement fallback behavior — if LLM output is invalid after N retries, return structured error to player
+- [ ] Write integration test — a set of natural language inputs maps to correct validated actions

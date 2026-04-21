@@ -1,11 +1,12 @@
-# EPIC-14 · Modding Tooling (Basic)
+# EPIC-14 · 3D Globe — Detail Level 2 (Sky View)
 
-**Phase:** Phase 2 — Alpha
+**Phase:** Phase 1 — MVP
 
 > **Status legend:** `[ ]` To do · `[~]` In progress · `[x]` Done
 
 ## Tasks
 
-- [ ] Write modding documentation — how to create a What If scenario JSON
-- [ ] Implement schema validator CLI tool — contributor can validate a scenario file before submitting
-- [ ] Add 2–3 community starter scenarios as examples in `/Data/WhatIf/`
+- [ ] Implement terrain relief layer — mountains, valleys, coastlines readable at this zoom
+- [ ] Implement biome region texture set: forest, desert, tundra, grassland, ice, ocean
+- [ ] Implement city presence markers — light clusters at night, subtle density markers by day
+- [ ] Ensure biome textures swap at era boundaries with a dissolve transition

@@ -1,12 +1,12 @@
-# EPIC-13 · Timeline UI (Alpha)
+# EPIC-13 · 3D Globe — Detail Level 1 (Space View)
 
-**Phase:** Phase 2 — Alpha
+**Phase:** Phase 1 — MVP
 
 > **Status legend:** `[ ]` To do · `[~]` In progress · `[x]` Done
 
 ## Tasks
 
-- [ ] Implement visual timeline bar — horizontal axis with era markers and event pins
-- [ ] Implement divergence indicator — visual marker showing where the modified timeline branches from baseline
-- [ ] Implement era navigation — click an era boundary to jump to it (triggers fast-forward if needed)
-- [ ] Implement state history scrubber — review past world states (read-only)
+- [ ] Implement continent color regions (landmass silhouettes, no terrain relief)
+- [ ] Implement city light glow layer on dark side of terminator (visible at Level 1)
+- [ ] Ensure city light density is driven by civilization state (updates at era boundaries)
+- [ ] Polish atmosphere and cloud rendering at full-globe scale

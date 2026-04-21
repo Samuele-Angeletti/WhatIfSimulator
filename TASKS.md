@@ -1,28 +1,30 @@
-# What If Simulator - Project Pipeline
+# What If Simulator — Project Pipeline
 
-This document tracks the full development pipeline, organized by epic and phase.
-Each epic maps to a functional area of the project. Tasks within an epic are ordered by dependency and should usually be completed top to bottom.
+This document tracks the full development pipeline, organized by epic and phase.  
+Each epic maps to a functional area of the project. Tasks within an epic are ordered by dependency — complete them top to bottom unless otherwise noted.
 
 > **Status legend:** `[ ]` To do · `[~]` In progress · `[x]` Done
 
 ---
 
-## Phase 0 - Project Foundation
+## Phase 0 — Project Foundation
 
 *Prerequisites for any development work. Must be completed before any other epic begins.*
 
 ### EPIC-00 · Repository & Standards Setup
 
-- [ ] Define and document folder structure with canonical Unity paths under `WhatIfSimulator/Assets/Core`, `Data`, `LLM`, and `UI`
-- [ ] Keep `README.md`, `\Tasks\EPIC-N.md` (all the tasks), and `CONTRIBUTING.md` at repository root
-- [ ] Write `CONTRIBUTING.md` - branching strategy, PR process, external library policy
-- [ ] Set up branch protection rules on `master` in GitHub settings (require PR + review before merge)
-- [ ] Create issue templates on GitHub (bug report, feature request, library approval request) under `.github/ISSUE_TEMPLATE`
+- [ ] Initialize Unity project with target Unity version (document version in README)
+- [ ] Set up `.gitignore` for Unity projects
+- [ ] Define and document folder structure (`/Core`, `/Data`, `/LLM`, `/UI`)
+- [ ] Add `README.md`, `TASKS.md`, `CONTRIBUTING.md` to repository root
+- [ ] Write `CONTRIBUTING.md` — branching strategy, PR process, external library policy
+- [ ] Set up branch protection rules on `main` (require PR + review before merge)
+- [ ] Create issue templates on GitHub (bug report, feature request, library approval request)
 - [ ] Define and document code style conventions (naming, file structure, comment standards) for C#
 
 ---
 
-## Phase 1 - MVP
+## Phase 1 — MVP
 
 *A working simulation loop with no LLM, predefined actions, and one What If scenario.*
 
@@ -30,24 +32,24 @@ Each epic maps to a functional area of the project. Tasks within an epic are ord
 
 *All data formats must be finalized before engine work begins. These schemas are the contract between all systems.*
 
-- [ ] Define `WorldState` schema - the complete snapshot of simulation state at any tick
-- [ ] Define `SimulationEvent` schema (including `chunkGenerated` flag and JsonUtility-safe impact entry arrays)
+- [ ] Define `WorldState` schema — the complete snapshot of simulation state at any tick
+- [ ] Define `SimulationEvent` schema (including `chunk_generated` flag and `impact` map)
 - [ ] Define `Action` schema (`action`, `target`, `region`, `intensity`)
-- [ ] Define `WhatIfScenario` schema (including all supported `modificationType` values and discriminated payload sections)
-- [ ] Define `ChunkSummary` schema - output of a fast-forward pass (events, state delta, narrative placeholder)
-- [ ] Write JSON validation rules and specs for each schema under `WhatIfSimulator/Assets/Data/Contracts`
-- [ ] Add example files for each schema under `WhatIfSimulator/Assets/Data`
+- [ ] Define `WhatIfScenario` schema (including all supported `modification` types)
+- [ ] Define `ChunkSummary` schema — output of a fast-forward pass (events, state delta, narrative placeholder)
+- [ ] Write JSON validation rules / specs for each schema
+- [ ] Add example files for each schema under `/Data`
 
 ---
 
 ### EPIC-02 · Simulation Engine Core
 
-- [ ] Implement `SimulationEngine` - main loop that advances world state by one tick
+- [ ] Implement `SimulationEngine` — main loop that advances world state by one tick
 - [ ] Implement seeded random number generator wrapper (deterministic, loggable)
 - [ ] Implement fixed timestep tick system
 - [ ] Implement state transition logger (records full state at each tick)
 - [ ] Implement `WorldState` loader and saver (serialize/deserialize from JSON via `JsonUtility`)
-- [ ] Implement seed plus scenario reproducibility test - same inputs must always produce identical output
+- [ ] Implement seed + scenario reproducibility test — same inputs must always produce identical output
 - [ ] Write unit tests for determinism (run simulation twice with same seed, assert identical output)
 
 ---
@@ -59,7 +61,7 @@ Each epic maps to a functional area of the project. Tasks within an epic are ord
 - [ ] Implement migration logic between regions (driven by resource and conflict state)
 - [ ] Implement demographic structure (age cohorts, basic mortality model)
 - [ ] Expose population parameters as data-driven config (JSON ScriptableObject)
-- [ ] Write integration test - population evolves plausibly over N ticks with default parameters
+- [ ] Write integration test — population evolves plausibly over N ticks with default parameters
 
 ---
 
@@ -67,10 +69,10 @@ Each epic maps to a functional area of the project. Tasks within an epic are ord
 
 - [ ] Implement resource types and per-region resource pools
 - [ ] Implement resource production model (output per tick, influenced by population and technology)
-- [ ] Implement trade flow logic between regions (supply and demand driven)
-- [ ] Implement scarcity model - resource shortage triggers effects on population and conflict systems
+- [ ] Implement trade flow logic between regions (supply/demand driven)
+- [ ] Implement scarcity model — resource shortage triggers effects on population and conflict systems
 - [ ] Expose economy parameters as data-driven config
-- [ ] Write integration test - scarcity scenario produces expected downstream effects
+- [ ] Write integration test — scarcity scenario produces expected downstream effects
 
 ---
 
@@ -81,18 +83,18 @@ Each epic maps to a functional area of the project. Tasks within an epic are ord
 - [ ] Implement technology diffusion between regions
 - [ ] Implement technological acceleration feedback (advanced tech speeds further research)
 - [ ] Expose technology tree as data-driven config (JSON)
-- [ ] Write integration test - technology spreads and accelerates plausibly over N ticks
+- [ ] Write integration test — technology spreads and accelerates plausibly over N ticks
 
 ---
 
 ### EPIC-06 · Conflict System
 
-- [ ] Implement political stability model per region (0.0-1.0 scale)
+- [ ] Implement political stability model per region (0.0–1.0 scale)
 - [ ] Implement war trigger logic (threshold-based, driven by scarcity and instability)
 - [ ] Implement alliance formation and dissolution
-- [ ] Implement war outcome model - effects on population, economy, and stability
+- [ ] Implement war outcome model — effects on population, economy, and stability
 - [ ] Expose conflict parameters as data-driven config
-- [ ] Write integration test - scarcity plus instability cascade produces conflict event
+- [ ] Write integration test — scarcity + instability cascade produces conflict event
 
 ---
 
@@ -100,46 +102,46 @@ Each epic maps to a functional area of the project. Tasks within an epic are ord
 
 *The layer that allows the four subsystems to read and write shared state.*
 
-- [ ] Define shared state interface - how systems consume and produce state each tick
-- [ ] Implement tick orchestrator - executes all systems in correct order each tick
-- [ ] Implement inter-system feedback rules (for example conflict reduces economy, economy affects population)
-- [ ] Write integration test - all four systems running together produce a coherent evolving world over 100 ticks
+- [ ] Define shared state interface — how systems consume and produce state each tick
+- [ ] Implement tick orchestrator — executes all systems in correct order each tick
+- [ ] Implement inter-system feedback rules (e.g. conflict reduces economy, economy affects population)
+- [ ] Write integration test — all four systems running together produce a coherent evolving world over 100 ticks
 
 ---
 
 ### EPIC-08 · What If System
 
-- [ ] Implement `WhatIfLoader` - reads and validates scenario JSON files at startup
+- [ ] Implement `WhatIfLoader` — reads and validates scenario JSON files at startup
 - [ ] Implement `remove_event` modification type
 - [ ] Implement `add_event` modification type
 - [ ] Implement `modify_parameter` modification type
 - [ ] Implement `inject_rule` modification type
 - [ ] Implement `alter_initial_conditions` modification type
-- [ ] Implement scenario compositor - applies multiple What If modules together without conflict
+- [ ] Implement scenario compositor — applies multiple What If modules together without conflict
 - [ ] Create first built-in scenario: `no_dinosaur_extinction`
-- [ ] Write integration test - scenario modifies baseline simulation and produces divergent output
+- [ ] Write integration test — scenario modifies baseline simulation and produces divergent output
 
 ---
 
-### EPIC-09 · Temporal Chunking and Fast-Forward
+### EPIC-09 · Temporal Chunking & Fast-Forward
 
-- [ ] Implement chunk definition format - start timestamp, end timestamp, resolution level
+- [ ] Implement chunk definition format — start timestamp, end timestamp, resolution level
 - [ ] Implement coarse-resolution simulation pass (fast-forward mode)
-- [ ] Implement divergence resolver - propagates What If modifications across a skipped chunk
+- [ ] Implement divergence resolver — propagates What If modifications across a skipped chunk
 - [ ] Implement event generator for fast-forward chunks (probabilistic but seeded)
-- [ ] Implement `ChunkSummary` emitter - outputs key events and state delta for the skipped interval
-- [ ] Define built-in era boundaries (for example Cretaceous, Holocene, Early Civilization, Medieval, Modern)
-- [ ] Write integration test - fast-forward from -65M to -10K produces valid world state
+- [ ] Implement `ChunkSummary` emitter — outputs key events and state delta for the skipped interval
+- [ ] Define built-in era boundaries (e.g. Cretaceous, Holocene, Early Civilization, Medieval, Modern)
+- [ ] Write integration test — fast-forward from −65M to −10K produces valid world state
 
 ---
 
 ### EPIC-10 · Action System (Predefined, No LLM)
 
-- [ ] Implement `ActionValidator` - checks action schema validity and intensity bounds
-- [ ] Implement `ActionExecutor` - applies a validated action to world state
+- [ ] Implement `ActionValidator` — checks action schema validity and intensity bounds
+- [ ] Implement `ActionExecutor` — applies a validated action to world state
 - [ ] Implement predefined action set: `boost_technology`, `destabilize_region`, `increase_resources`, `accelerate_diffusion`
-- [ ] Implement action effect model - maps intensity to magnitude of world state change
-- [ ] Write integration test - each predefined action produces expected state delta
+- [ ] Implement action effect model — maps intensity to magnitude of world state change
+- [ ] Write integration test — each predefined action produces expected state delta
 
 ---
 
@@ -147,105 +149,198 @@ Each epic maps to a functional area of the project. Tasks within an epic are ord
 
 *Minimal interface to observe the simulation. No visual polish required at this stage.*
 
-- [ ] Implement basic Timeline View - scrollable list of emitted events
-- [ ] Implement World State panel - display key state values per region (population, resources, stability)
-- [ ] Implement predefined Action panel - buttons for each available action
-- [ ] Implement Tick controls - step forward, run, pause
-- [ ] Implement Fast-Forward controls - select era, trigger chunk pass, display `ChunkSummary`
-- [ ] Implement seed input field - allow player to set simulation seed before start
+- [ ] Implement basic Timeline View — scrollable list of emitted events
+- [ ] Implement World State panel — display key state values per region (population, resources, stability)
+- [ ] Implement predefined Action panel — buttons for each available action
+- [ ] Implement Tick controls — step forward, run, pause
+- [ ] Implement Fast-Forward controls — select era, trigger chunk pass, display ChunkSummary
+- [ ] Implement seed input field — allow player to set simulation seed before start
 
 ---
 
-## Phase 2 - Alpha
+### EPIC-12 · 3D Globe — Core
+
+*The primary visual interface. Must be implemented before any visual layer work begins.*
+
+- [ ] Create sphere mesh with sufficient polygon density for low-poly aesthetic at all zoom levels
+- [ ] Apply base land/ocean texture (low-poly, realistic style — not cartoon, not hyper-realistic)
+- [ ] Implement free camera rotation (click and drag)
+- [ ] Implement zoom (scroll wheel / pinch) with min/max bounds
+- [ ] Implement pan at Level 2 and Level 3 zoom (drag across surface)
+- [ ] Implement zoom threshold detection — determines which detail level is active
+- [ ] Implement atmosphere rim glow (shader, visible at Level 1)
+- [ ] Implement slow-rotating cloud layer (estetico, independent of simulation tick rate)
+- [ ] Implement day/night terminator with dark-side ambient shadow (estetico, slow fixed rotation)
+
+---
+
+### EPIC-13 · 3D Globe — Detail Level 1 (Space View)
+
+- [ ] Implement continent color regions (landmass silhouettes, no terrain relief)
+- [ ] Implement city light glow layer on dark side of terminator (visible at Level 1)
+- [ ] Ensure city light density is driven by civilization state (updates at era boundaries)
+- [ ] Polish atmosphere and cloud rendering at full-globe scale
+
+---
+
+### EPIC-14 · 3D Globe — Detail Level 2 (Sky View)
+
+- [ ] Implement terrain relief layer — mountains, valleys, coastlines readable at this zoom
+- [ ] Implement biome region texture set: forest, desert, tundra, grassland, ice, ocean
+- [ ] Implement city presence markers — light clusters at night, subtle density markers by day
+- [ ] Ensure biome textures swap at era boundaries with a dissolve transition
+
+---
+
+### EPIC-15 · 3D Globe — Detail Level 3 (Close View)
+
+- [ ] Implement urban vs. natural zone distinction (density shading / texture variation)
+- [ ] Implement infrastructure overlay — road networks as thin lines, ports, major constructions
+- [ ] Implement era-appropriate mobile element system:
+  - [ ] Early era: sailing ships on ocean, caravans on land routes
+  - [ ] Industrial era: steamships, railways
+  - [ ] Modern era: aircraft, cargo ships
+  - [ ] Future era: drones, autonomous vehicles
+- [ ] Implement mobile element visibility toggle based on current simulation era
+- [ ] Ensure no ground-level elements (humans, animals, small vehicles) are ever rendered
+
+---
+
+### EPIC-16 · Globe — Era Texture Transition System
+
+- [ ] Define era texture sets — one texture pack per era for each biome layer
+- [ ] Implement era boundary detector — triggers texture swap when a fast-forward chunk completes
+- [ ] Implement dissolve transition shader between old and new era textures
+- [ ] Implement city light density interpolation across era transitions
+- [ ] QA pass — verify all era transitions produce visually coherent results
+
+---
+
+## Phase 2 — Alpha
 
 *Full system interaction, event generation, and a usable timeline UI.*
 
-### EPIC-12 · Event System and Feed
+### EPIC-17 · Event System & Feed
 
-- [ ] Implement event registry - catalog of all possible event types with trigger conditions
-- [ ] Implement event trigger evaluator - checks conditions each tick and fires matching events
-- [ ] Implement event feed UI - real-time scrolling display of events as they occur
-- [ ] Implement event detail view - click an event to see full description and impact
-- [ ] Add 10 or more baseline historical events to the event registry
-
----
-
-### EPIC-13 · Timeline UI (Alpha)
-
-- [ ] Implement visual timeline bar - horizontal axis with era markers and event pins
-- [ ] Implement divergence indicator - visual marker showing where the modified timeline branches from baseline
-- [ ] Implement era navigation - click an era boundary to jump to it, triggering fast-forward if needed
-- [ ] Implement state history scrubber - review past world states, read-only
+- [ ] Implement event registry — catalog of all possible event types with trigger conditions
+- [ ] Implement event trigger evaluator — checks conditions each tick and fires matching events
+- [ ] Implement event feed UI — real-time scrolling display of events as they occur
+- [ ] Implement event detail view — click an event to see full description and impact
+- [ ] Add 10+ baseline historical events to the event registry (e.g. ice ages, volcanic eruptions, pandemics)
 
 ---
 
-### EPIC-14 · Modding Tooling (Basic)
+### EPIC-18 · Timeline UI (Alpha)
 
-- [ ] Write modding documentation - how to create a What If scenario JSON
-- [ ] Implement schema validator CLI tool - contributors can validate a scenario file before submitting
-- [ ] Add 2 to 3 community starter scenarios as examples in `WhatIfSimulator/Assets/Data/WhatIf/`
+- [ ] Implement visual timeline bar — horizontal axis with era markers and event pins
+- [ ] Implement divergence indicator — visual marker showing where the modified timeline branches from baseline
+- [ ] Implement era navigation — click an era boundary to jump to it (triggers fast-forward if needed)
+- [ ] Implement state history scrubber — review past world states (read-only)
 
 ---
 
-## Phase 3 - Beta
+### EPIC-19 · Modding Tooling (Basic)
+
+- [ ] Write modding documentation — how to create a What If scenario JSON
+- [ ] Implement schema validator CLI tool — contributor can validate a scenario file before submitting
+- [ ] Add 2–3 community starter scenarios as examples in `/Data/WhatIf/`
+
+---
+
+## Phase 3 — Beta
 
 *LLM integration: natural language input and narrative generation.*
 
-### EPIC-15 · LLM Interpreter
+### EPIC-20 · LLM Interpreter
 
-- [ ] Define interpreter system prompt - constraints, output schema, rejection criteria
+- [ ] Define interpreter system prompt — constraints, output schema, rejection criteria
 - [ ] Implement LLM API client (local inference or self-hosted backend, configurable)
-- [ ] Implement natural language to Action JSON pipeline
-- [ ] Implement output validator - rejects any LLM response that fails action schema
-- [ ] Implement fallback behavior - if LLM output is invalid after N retries, return structured error to player
-- [ ] Write integration test - a set of natural language inputs maps to correct validated actions
+- [ ] Implement natural language → Action JSON pipeline
+- [ ] Implement output validator — rejects any LLM response that fails action schema
+- [ ] Implement fallback behavior — if LLM output is invalid after N retries, return structured error to player
+- [ ] Write integration test — a set of natural language inputs maps to correct validated actions
 
 ---
 
-### EPIC-16 · LLM Narrator
+### EPIC-21 · LLM Narrator
 
-- [ ] Define narrator system prompt - tone, era-awareness, factual grounding in simulation state
-- [ ] Implement state to narrative pipeline (tick summaries, chunk summaries, event descriptions)
+- [ ] Define narrator system prompt — tone, era-awareness, factual grounding in simulation state
+- [ ] Implement state → narrative pipeline (tick summaries, chunk summaries, event descriptions)
 - [ ] Implement in-world news article generator (triggered by significant events)
 - [ ] Implement historical retrospective generator (triggered at era boundaries)
-- [ ] Write quality test set - a set of world states with expected narrative characteristics
+- [ ] Write quality test set — a set of world states with expected narrative characteristics
 
 ---
 
-### EPIC-17 · LLM Infrastructure
+### EPIC-22 · LLM Infrastructure
 
 - [ ] Implement configuration system for LLM backend (endpoint, model, auth)
-- [ ] Implement request queue - prevents simultaneous LLM calls from blocking the simulation
-- [ ] Implement graceful degradation - game remains fully playable if LLM is unavailable
+- [ ] Implement request queue — prevents simultaneous LLM calls from blocking the simulation
+- [ ] Implement graceful degradation — game remains fully playable if LLM is unavailable
 
 ---
 
-## Phase 4 - Release
+## Phase 4 — Release
 
 *Stability, mod support, and community tooling.*
 
-### EPIC-18 · Mod Support and Community Tooling
+### EPIC-23 · Mod Support & Community Tooling
 
-- [ ] Implement mod loader - discovers and loads scenario files from a `/Mods` directory at runtime
-- [ ] Implement mod conflict detector - warns when two loaded mods modify the same target
+- [ ] Implement mod loader — discovers and loads scenario files from a `/Mods` directory at runtime
+- [ ] Implement mod conflict detector — warns when two loaded mods modify the same target
 - [ ] Publish schema definitions and modding documentation as standalone wiki pages
 - [ ] Create scenario submission guidelines and review checklist for maintainers
 
 ---
 
-### EPIC-19 · Stability and Performance
+### EPIC-24 · Stability & Performance
 
-- [ ] Profile simulation performance - identify bottlenecks in tick loop and chunk passes
+- [ ] Profile simulation performance — identify bottlenecks in tick loop and chunk passes
 - [ ] Implement simulation state compression for long-running sessions
-- [ ] Add error boundary system - a subsystem crash must not corrupt global world state
-- [ ] Conduct chaos testing - run simulation with extreme parameter values and verify graceful degradation
+- [ ] Add error boundary system — a subsystem crash must not corrupt global world state
+- [ ] Conduct chaos testing — run simulation with extreme parameter values and verify graceful degradation
 
 ---
 
-### EPIC-20 · Release Packaging
+### EPIC-25 · Release Packaging
 
 - [ ] Define minimum supported Unity version and document it
 - [ ] Build and test Windows desktop release
 - [ ] Build and test macOS desktop release
 - [ ] Write player-facing documentation (getting started, how to mod)
 - [ ] Tag `v1.0.0` release on GitHub
+
+---
+
+## Dependency Map
+
+```
+EPIC-00
+  └── EPIC-01 (schemas)
+        └── EPIC-02 (engine core)
+              ├── EPIC-03 (population)
+              ├── EPIC-04 (economy)
+              ├── EPIC-05 (technology)
+              ├── EPIC-06 (conflict)
+              └── EPIC-07 (system interaction — requires 03+04+05+06)
+                    ├── EPIC-08 (what if system)
+                    ├── EPIC-09 (temporal chunking)
+                    └── EPIC-10 (action system)
+                          └── EPIC-11 (MVP UI — MVP complete ✓)
+                                ├── EPIC-12 (globe core)
+                                │     ├── EPIC-13 (globe level 1)
+                                │     ├── EPIC-14 (globe level 2)
+                                │     ├── EPIC-15 (globe level 3)
+                                │     └── EPIC-16 (era texture transitions)
+                                ├── EPIC-17 (event system & feed)
+                                ├── EPIC-18 (timeline UI)
+                                └── EPIC-19 (modding tooling — Alpha complete ✓)
+                                      ├── EPIC-20 (LLM interpreter)
+                                      ├── EPIC-21 (LLM narrator)
+                                      └── EPIC-22 (LLM infrastructure — Beta complete ✓)
+                                            ├── EPIC-23 (mod support)
+                                            ├── EPIC-24 (stability & performance)
+                                            └── EPIC-25 (release packaging — Release ✓)
+```
+
+> Note: EPIC-12 through EPIC-16 (globe rendering) can be developed in parallel with EPIC-17 through EPIC-19 (event/timeline/modding), as they share no direct code dependencies. Both tracks require EPIC-11 as a prerequisite.

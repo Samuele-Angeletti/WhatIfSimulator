@@ -1,12 +1,12 @@
-# EPIC-18 · Mod Support & Community Tooling
+# EPIC-18 · Timeline UI (Alpha)
 
-**Phase:** Phase 4 — Release
+**Phase:** Phase 2 — Alpha
 
 > **Status legend:** `[ ]` To do · `[~]` In progress · `[x]` Done
 
 ## Tasks
 
-- [ ] Implement mod loader — discovers and loads scenario files from a `/Mods` directory at runtime
-- [ ] Implement mod conflict detector — warns when two loaded mods modify the same target
-- [ ] Publish schema definitions and modding documentation as standalone wiki pages
-- [ ] Create scenario submission guidelines and review checklist for maintainers
+- [ ] Implement visual timeline bar — horizontal axis with era markers and event pins
+- [ ] Implement divergence indicator — visual marker showing where the modified timeline branches from baseline
+- [ ] Implement era navigation — click an era boundary to jump to it (triggers fast-forward if needed)
+- [ ] Implement state history scrubber — review past world states (read-only)

@@ -1,12 +1,11 @@
-# EPIC-19 · Stability & Performance
+# EPIC-19 · Modding Tooling (Basic)
 
-**Phase:** Phase 4 — Release
+**Phase:** Phase 2 — Alpha
 
 > **Status legend:** `[ ]` To do · `[~]` In progress · `[x]` Done
 
 ## Tasks
 
-- [ ] Profile simulation performance — identify bottlenecks in tick loop and chunk passes
-- [ ] Implement simulation state compression for long-running sessions
-- [ ] Add error boundary system — a subsystem crash must not corrupt global world state
-- [ ] Conduct chaos testing — run simulation with extreme parameter values and verify graceful degradation
+- [ ] Write modding documentation — how to create a What If scenario JSON
+- [ ] Implement schema validator CLI tool — contributor can validate a scenario file before submitting
+- [ ] Add 2–3 community starter scenarios as examples in `/Data/WhatIf/`
