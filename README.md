@@ -433,7 +433,7 @@ Community contributors can create What If scenarios (JSON), define new events, a
 
 ## License
 
-Open-source — license TBD.
+MIT
 
 ## Contributing
 
@@ -443,5 +443,6 @@ Contributions are welcome. Priority areas:
 - Data and event schema design
 - Modding tools and documentation
 - LLM integration (interpreter and narrator)
+- Art design (including models and texturing)
 
 See the modding guidelines above before submitting a scenario or system extension.
