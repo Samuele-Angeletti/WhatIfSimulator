@@ -1,13 +1,13 @@
-# EPIC-16 · LLM Narrator
+# EPIC-16 · Globe — Era Texture Transition System
 
-**Phase:** Phase 3 — Beta
+**Phase:** Phase 1 — MVP
 
 > **Status legend:** `[ ]` To do · `[~]` In progress · `[x]` Done
 
 ## Tasks
 
-- [ ] Define narrator system prompt — tone, era-awareness, factual grounding in simulation state
-- [ ] Implement state → narrative pipeline (tick summaries, chunk summaries, event descriptions)
-- [ ] Implement in-world news article generator (triggered by significant events)
-- [ ] Implement historical retrospective generator (triggered at era boundaries)
-- [ ] Write quality test set — a set of world states with expected narrative characteristics
+- [ ] Define era texture sets — one texture pack per era for each biome layer
+- [ ] Implement era boundary detector — triggers texture swap when a fast-forward chunk completes
+- [ ] Implement dissolve transition shader between old and new era textures
+- [ ] Implement city light density interpolation across era transitions
+- [ ] QA pass — verify all era transitions produce visually coherent results
