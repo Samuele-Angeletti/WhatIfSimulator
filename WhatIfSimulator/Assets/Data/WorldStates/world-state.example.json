@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0.0",
+  "seed": 424242,
+  "currentTimestamp": -10000,
+  "tick": 12,
+  "activeScenarioIds": [
+    "no_dinosaur_extinction"
+  ],
+  "regions": [
+    {
+      "id": "global",
+      "displayName": "Global",
+      "population": 1500000,
+      "stability": 0.72,
+      "technologyLevel": 0.18,
+      "resourceEntries": [
+        {
+          "key": "food",
+          "value": 1250.0
+        },
+        {
+          "key": "water",
+          "value": 2100.0
+        }
+      ]
+    }
+  ],
+  "globalMetrics": [
+    {
+      "key": "biodiversity",
+      "value": 0.91
+    },
+    {
+      "key": "temperatureDelta",
+      "value": -0.14
+    }
+  ]
+}

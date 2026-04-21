@@ -1,0 +1,137 @@
+{
+  "status": "partial_verification",
+  "code_files": [
+    {
+      "path": "README.md",
+      "summary": "Rewritten to document the nested Unity project layout, canonical asset paths, and JsonUtility-compatible schema examples."
+    },
+    {
+      "path": "TASKS.md",
+      "summary": "Updated EPIC-00 and EPIC-01 task wording to target repo-root governance and Unity asset contract locations."
+    },
+    {
+      "path": "Tasks/EPIC-00.md",
+      "summary": "Aligned repository foundation tasks with the nested Unity project and GitHub settings responsibilities."
+    },
+    {
+      "path": "Tasks/EPIC-01.md",
+      "summary": "Aligned core schema tasks with JsonUtility-safe contract expectations and canonical data paths."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "summary": "Added branching, PR, branch protection, external library approval, and C# style guidance."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "summary": "Added bug report template."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "summary": "Added feature request template."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/library_approval_request.md",
+      "summary": "Added external library approval template."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "summary": "Disabled blank issues."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Core/README.md",
+      "summary": "Reserved canonical Core folder."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/README.md",
+      "summary": "Documented Data folder responsibilities and JsonUtility constraints."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/LLM/README.md",
+      "summary": "Reserved canonical LLM folder and documented simulation authority boundaries."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/UI/README.md",
+      "summary": "Reserved canonical UI folder."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/Contracts/WorldState.schema.md",
+      "summary": "Added WorldState contract."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/Contracts/SimulationEvent.schema.md",
+      "summary": "Added SimulationEvent contract using impactEntries."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/Contracts/Action.schema.md",
+      "summary": "Added Action contract."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/Contracts/WhatIfScenario.schema.md",
+      "summary": "Added WhatIfScenario contract using discriminated payload sections."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/Contracts/ChunkSummary.schema.md",
+      "summary": "Added ChunkSummary contract."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/Contracts/SchemaValidationRules.md",
+      "summary": "Added shared validation rules and error codes."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/WorldStates/world-state.example.json",
+      "summary": "Added canonical WorldState example."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/Events/simulation-event.example.json",
+      "summary": "Added canonical SimulationEvent example."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/Actions/action.example.json",
+      "summary": "Added canonical Action example."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/WhatIf/no-dinosaur-extinction.example.json",
+      "summary": "Added canonical WhatIfScenario example."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Data/ChunkSummaries/chunk-summary.example.json",
+      "summary": "Added canonical ChunkSummary example."
+    }
+  ],
+  "test_files": [
+    {
+      "path": "WhatIfSimulator/Assets/Tests/EditMode/WhatIfSimulator.EditModeTests.asmdef",
+      "summary": "Added EditMode test assembly definition."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Tests/EditMode/SchemaContractDtos.cs",
+      "summary": "Added test-only DTOs matching the approved contract shapes."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Tests/EditMode/SchemaContractExamplesTests.cs",
+      "summary": "Added EditMode contract tests for schema docs and example JSON payloads."
+    },
+    {
+      "path": "WhatIfSimulator/Assets/Tests/EditMode/RepositoryGovernanceDocsTests.cs",
+      "summary": "Added EditMode governance tests for canonical paths and contributor rules."
+    }
+  ],
+  "coverage": {
+    "line_coverage": null,
+    "branch_coverage": null,
+    "function_coverage": null,
+    "notes": "Unity EditMode tests could not be executed in this shell because no Unity CLI was available."
+  },
+  "tdd_verification": {
+    "tests_generated": 9,
+    "red_phase_verified": false,
+    "green_phase_verified": false,
+    "refactor_completed": true,
+    "local_checks_completed": [
+      "All example JSON files parsed successfully with PowerShell ConvertFrom-Json",
+      "All schema contract documents include required section headings",
+      "README and CONTRIBUTING contain the required governance and canonical-path phrases",
+      "Placeholder OWNER/REPO links and legacy event field names were removed from the new contract surface"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0.0",
+  "startTimestamp": -65000000,
+  "endTimestamp": -10000,
+  "resolution": "era",
+  "events": [
+    {
+      "eventId": "event_kpg_divergence",
+      "summary": "The extinction bottleneck never formed, producing a radically different ecological baseline."
+    }
+  ],
+  "stateDeltaEntries": [
+    {
+      "key": "biodiversity",
+      "value": 0.35
+    },
+    {
+      "key": "mammalianDominance",
+      "value": -0.65
+    }
+  ],
+  "divergenceNotes": [
+    "Dinosaur lineages remained ecologically dominant.",
+    "Later civilizational emergence must be recalculated from a different biosphere."
+  ],
+  "narrativePlaceholder": "Narrative generation pending for this fast-forward interval."
+}

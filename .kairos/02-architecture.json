@@ -1,0 +1,121 @@
+{
+  "selected_option": "Option B: Contract-first repository foundation with JsonUtility-compatible schema specs, example data, and repo-root governance docs",
+  "rationale": "Option B is selected over Option A, a minimal documentation refresh with loose examples only, and Option C, an editor-tooling-heavy validation implementation with custom importers or external schema libraries. EPIC-00 and EPIC-01 need a durable contract surface before engine work starts, but they must remain lightweight, Unity-native, and dependency-free. This option makes the nested Unity project the canonical implementation target, separates repo-root governance from Unity assets, defines the five core schemas in DTO-friendly shapes that avoid unsupported JsonUtility patterns such as raw dictionaries and runtime polymorphism, and provides example JSON plus validation guidance without adding runtime systems or changing packages.",
+  "technology_choices": [
+    {
+      "component": "Repository governance",
+      "choice": "Repo-root Markdown documentation plus in-repo GitHub issue templates",
+      "why": "Keeps contributor process, library approval policy, and maintainer branch-protection guidance outside the Unity project while aligning all wording to README.md."
+    },
+    {
+      "component": "Unity folder architecture",
+      "choice": "Canonical implementation folders under WhatIfSimulator/Assets/Core, WhatIfSimulator/Assets/Data, WhatIfSimulator/Assets/LLM, and WhatIfSimulator/Assets/UI",
+      "why": "Matches the real nested Unity project and removes ambiguity from the README's conceptual top-level structure."
+    },
+    {
+      "component": "Schema specification medium",
+      "choice": "Markdown contract documents with required fields, optional fields, constraints, determinism notes, and JsonUtility caveats",
+      "why": "Fits a docs-and-contract milestone, is easy to diff and review, and avoids premature tooling."
+    },
+    {
+      "component": "Serialization strategy",
+      "choice": "Unity C# DTO-oriented JSON designed for built-in JsonUtility",
+      "why": "Supports the approved Unity/C# stack and avoids unapproved external serializers."
+    },
+    {
+      "component": "Dynamic key/value data",
+      "choice": "Explicit entry arrays such as ImpactEntry[] instead of dictionary JSON objects",
+      "why": "JsonUtility compatibility is higher with serializable arrays than with map-like structures, especially for SimulationEvent impact data."
+    },
+    {
+      "component": "Scenario modification modeling",
+      "choice": "Discriminated-union shape using modificationType plus fixed optional payload sections",
+      "why": "Allows WhatIfScenario to support multiple modification kinds without polymorphic deserialization requirements."
+    },
+    {
+      "component": "Validation design",
+      "choice": "Documented validation rules with a future lightweight ValidationResult pattern for Unity editor/startup checks",
+      "why": "Provides immediate contract clarity now and a low-friction path to later C# validation without adding a heavy validation engine."
+    },
+    {
+      "component": "Example data layout",
+      "choice": "Per-schema JSON examples under WhatIfSimulator/Assets/Data in stable subfolders",
+      "why": "Creates a predictable contract surface for future loaders, tests, and content authors."
+    },
+    {
+      "component": "Dependency boundary",
+      "choice": "No changes to WhatIfSimulator/Packages/manifest.json",
+      "why": "The README requires prior approval for external libraries, and this milestone can be completed with standard Unity capabilities only."
+    }
+  ],
+  "integration_points": {
+    "with_system_1": "Align README.md, TASKS.md, Tasks/EPIC-00.md, Tasks/EPIC-01.md, and the new CONTRIBUTING.md so repo-root documentation consistently states that governance lives at the root and Unity implementation lives under WhatIfSimulator/Assets.",
+    "with_system_2": "Create .github/ISSUE_TEMPLATE entries for bug reports, feature requests, and library approval requests so contributor workflow matches the README external-library policy.",
+    "with_system_3": "Define and document the canonical Unity asset layout under WhatIfSimulator/Assets/Core, Data, LLM, and UI so future engine, LLM, and UI work builds on a stable structure.",
+    "with_system_4": "Place schema contracts and example JSON under WhatIfSimulator/Assets/Data so future Unity DTOs, loaders, validators, and content pipelines can consume one shared contract surface.",
+    "with_system_5": "Preserve README terminology for Action, SimulationEvent, WhatIfScenario, temporal chunking, divergence, and determinism so EPIC-01 contracts remain consistent with the project vision.",
+    "with_system_6": "Document master branch protection as an out-of-repo maintainer task with explicit acceptance criteria rather than trying to enforce it in repository contents."
+  },
+  "database_changes": {
+    "new_tables": [],
+    "modified_tables": []
+  },
+  "api_contracts": {
+    "FILES /WhatIfSimulator/Assets/Data/**/*.json": {
+      "request": {
+        "schema_type": "WorldState | SimulationEvent | Action | WhatIfScenario | ChunkSummary",
+        "schema_version": "string",
+        "payload_shape": "JsonUtility-compatible DTO JSON using explicit objects and arrays only",
+        "validation_rules": "required fields, allowed enums, numeric bounds, reference conventions, determinism notes"
+      },
+      "response": {
+        "consumer": "future Unity editor/startup loaders and validators",
+        "success": "file accepted as canonical sample or content input",
+        "failure": "validation report containing error_codes, file path, field path, and human-readable message"
+      }
+    },
+    "FILES /WhatIfSimulator/Assets/Data/Events/*.json": {
+      "request": {
+        "id": "string",
+        "timestamp": "number",
+        "eventType": "string",
+        "description": "string",
+        "chunkGenerated": "boolean",
+        "impactEntries": "ImpactEntry[]"
+      },
+      "response": {
+        "serialization": "deserializable by Unity JsonUtility DTOs",
+        "compatibility_rule": "no raw dictionary/map fields; impact is represented as explicit entries"
+      }
+    },
+    "FILES /WhatIfSimulator/Assets/Data/WhatIf/*.json": {
+      "request": {
+        "id": "string",
+        "name": "string",
+        "description": "string",
+        "modifications": "ScenarioModification[] with modificationType and fixed optional payload blocks"
+      },
+      "response": {
+        "composition_rule": "multiple modifications allowed only when deterministic and schema-valid",
+        "rejection_rule": "unknown modificationType or conflicting payload shape is rejected during validation"
+      }
+    }
+  },
+  "error_codes": [
+    "SCHEMA_REQUIRED_FIELD_MISSING",
+    "SCHEMA_INVALID_TYPE",
+    "SCHEMA_INVALID_RANGE",
+    "SCHEMA_UNSUPPORTED_MAP_SHAPE",
+    "SCHEMA_UNKNOWN_MODIFICATION_TYPE",
+    "SCHEMA_MULTIPLE_PAYLOADS_SET",
+    "SCHEMA_REFERENCE_NOT_FOUND",
+    "SCHEMA_DETERMINISM_RULE_VIOLATION",
+    "DOC_PATH_MISMATCH",
+    "GOVERNANCE_POLICY_MISMATCH"
+  ],
+  "error_handling": "Use a non-throwing ValidationResult pattern in future Unity/C# validators: each document check returns isValid, errors[], and warnings[]; invalid files are rejected before they reach simulation or LLM flows, and governance mismatches are reported as documentation review failures rather than runtime errors.",
+  "performance_targets": {
+    "latency_ms": "0 ms added to gameplay runtime path; future editor/startup validation of the small sample dataset should complete within 100 ms on a typical developer machine",
+    "throughput_rps": "Not applicable for HTTP; future local validators should process at least 50 small JSON documents per second in editor/startup validation runs"
+  }
+}

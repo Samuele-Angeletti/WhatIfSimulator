@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0.0",
+  "action": "boost_technology",
+  "target": "electricity",
+  "region": "global",
+  "intensity": 0.6,
+  "reason": "Accelerate discovery for an alternate industrial timeline."
+}

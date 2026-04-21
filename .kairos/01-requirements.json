@@ -1,0 +1,64 @@
+{
+  "scope": "Implement EPIC-00 and EPIC-01 as a combined foundation-and-contract milestone for this repository. Included work is: documenting and scaffolding the canonical Unity folder structure inside the nested Unity project at WhatIfSimulator/Assets/Core, WhatIfSimulator/Assets/Data, WhatIfSimulator/Assets/LLM, and WhatIfSimulator/Assets/UI; adding and/or updating repo-root governance and contributor documentation, especially CONTRIBUTING.md, in alignment with README.md as the source of truth; adding in-repo GitHub issue template files; defining C# code style conventions for Unity contributors; defining the WorldState, SimulationEvent, Action, WhatIfScenario, and ChunkSummary schemas; documenting validation rules/specs for those schemas; and adding example JSON files under the Unity project's Data area. Scope should be limited to documentation, schema contracts, example data, and lightweight validation guidance compatible with Unity/C# and built-in JsonUtility. Explicitly excluded from this scope are simulation-engine implementation, LLM runtime integration, full gameplay/UI behavior, branch protection enforcement itself inside GitHub admin settings, and any external dependency unless separately approved.",
+  "constraints": {
+    "performance": "No hard gameplay latency target is required for EPIC-00/01, but the deliverables must add near-zero runtime overhead. Any schema loading or validation guidance should remain lightweight enough for editor/startup use on small sample datasets and should not require a heavy validation engine.",
+    "scale": "Initial scale is small and repo-local: 5 core schemas, a limited set of example files, one Unity project, and a small contributor workflow. The schema contracts should still be designed to evolve toward more regions, events, scenarios, and chunk summaries without forcing breaking rewrites of the data model.",
+    "security": "Honor the README philosophy: the simulation engine remains the authoritative source of truth, LLMs do not directly alter simulation logic, no secrets or hosted services are required for this milestone, and no external Unity package or DLL may be added without explicit approval. Governance controls on master require GitHub maintainer/admin action.",
+    "team": "The implementation must fit a Unity/C# repository using standard Unity packages and built-in JsonUtility by preference. Because JsonUtility has limited support for polymorphic payloads and dictionary-like structures, schemas should prefer explicit serializable DTO shapes, wrapper arrays, or documented conventions over advanced JSON patterns that would require Newtonsoft.Json or another unapproved dependency.",
+    "timeline": "This is prerequisite work for the rest of the roadmap and should be treated as a short foundational milestone completed before engine/system implementation begins. No explicit deadline was provided; GitHub admin actions may complete on a parallel maintainer track if contributors do not have repository settings access."
+  },
+  "risks": [
+    {
+      "risk": "Folder structure could be implemented in the wrong place because README examples show /Core, /Data, /LLM, and /UI as top-level concepts while the actual Unity codebase lives under the nested WhatIfSimulator project.",
+      "impact": "high",
+      "mitigation": "Make the canonical implementation paths explicit in the documentation: repo root is for project docs/governance, while Unity implementation folders live under WhatIfSimulator/Assets. Reflect that consistently in README, CONTRIBUTING, and schema/example paths."
+    },
+    {
+      "risk": "JsonUtility limitations may conflict with the intended schema shapes, especially SimulationEvent.impact as a map and WhatIfScenario.modifications as multiple type-specific variants.",
+      "impact": "high",
+      "mitigation": "Define JsonUtility-compatible shapes early, such as key/value entry arrays instead of raw dictionaries and discriminated-union style objects with explicit type fields and fixed optional payload sections. Document the serialization tradeoffs directly in the schema spec."
+    },
+    {
+      "risk": "The team may over-scope EPIC-01 into a full JSON Schema engine or advanced runtime validator, which would likely require external packages and delay the actual contract-definition milestone.",
+      "impact": "medium",
+      "mitigation": "Limit EPIC-01 to field-level schema definitions, validation rules/specs, and example files. If machine-enforced validation beyond lightweight C# checks is desired, treat it as a follow-up requiring explicit library approval."
+    },
+    {
+      "risk": "Branch protection on master cannot be fully completed from repository contents alone and may block the definition of done if admin access is unavailable.",
+      "impact": "medium",
+      "mitigation": "Separate this into an explicit maintainer/admin action with acceptance evidence, such as a documented checklist or screenshot requirement, while still completing the in-repo governance artifacts in the same milestone."
+    },
+    {
+      "risk": "README examples, task files, schema specs, and example JSON may drift apart, creating contradictory contracts before engine implementation starts.",
+      "impact": "medium",
+      "mitigation": "Use README.md as the source of truth, reconcile terminology during EPIC-00/01, and review all example payloads against the documented schema fields before approval."
+    },
+    {
+      "risk": "The combined epic may unintentionally introduce future-coupled implementation decisions for systems that do not yet exist, such as premature subsystem folders, loaders, or ScriptableObject flows.",
+      "impact": "medium",
+      "mitigation": "Keep the milestone focused on repository structure, contributor standards, contracts, and sample data only. Defer engine behavior, loaders, and subsystem logic to later epics unless a minimal placeholder is needed purely to anchor the folder structure."
+    }
+  ],
+  "success_criteria": [
+    "The repository documents a clear split between repo-root documentation/governance and Unity implementation inside WhatIfSimulator/Assets.",
+    "Canonical Unity folders for Core, Data, LLM, and UI are defined and documented in a way that matches the nested Unity project structure.",
+    "A root CONTRIBUTING.md exists and covers branching strategy, pull request process, review expectations, and the external library approval policy from the README.",
+    "C# code style conventions for Unity contributors are documented, including naming, file structure, and comment standards.",
+    "GitHub issue templates for bug reports, feature requests, and library approval requests are defined as in-repo files ready to be used on GitHub.",
+    "Branch protection on master is explicitly identified as a GitHub settings task and has clear acceptance criteria for maintainers to complete outside the codebase.",
+    "WorldState, SimulationEvent, Action, WhatIfScenario, and ChunkSummary each have a documented schema contract with required fields, optional fields, type constraints, and determinism-relevant notes where applicable.",
+    "Schema validation rules/specs are documented in a way that can be implemented without unapproved external dependencies and that acknowledges JsonUtility compatibility constraints.",
+    "Example JSON files exist for each core schema under the Unity project's Data area and are organized consistently for future loaders and validators.",
+    "README terminology and example payloads remain consistent with the schema and repository structure definitions produced by EPIC-00 and EPIC-01."
+  ],
+  "integration_points": [
+    "Repository-root project docs: README.md, TASKS.md, Tasks/EPIC-00.md, Tasks/EPIC-01.md, and the new CONTRIBUTING.md",
+    "GitHub in-repo metadata under .github/ISSUE_TEMPLATE for bug report, feature request, and library approval request templates",
+    "GitHub repository settings for branch protection on master, which require maintainer/admin access outside the repo contents",
+    "Nested Unity project structure under WhatIfSimulator/Assets, especially the new Core, Data, LLM, and UI folders",
+    "Schema and example data location under WhatIfSimulator/Assets/Data, which will become the contract surface for future loaders and content",
+    "Future Unity/C# DTOs, loaders, and validators that will consume the schema/example JSON using JsonUtility-compatible shapes",
+    "README architecture sections covering Action, SimulationEvent, WhatIfScenario, temporal chunking, determinism, and project structure, because these sections define the contract vocabulary EPIC-01 must align to",
+    "Potential dependency boundary at WhatIfSimulator/Packages/manifest.json, which should remain unchanged unless an external validation or serialization library is explicitly approved"
+  ]
+}

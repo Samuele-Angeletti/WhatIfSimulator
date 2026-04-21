@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "event_kpg_divergence",
+  "timestamp": -65000000,
+  "eventType": "divergence_event",
+  "description": "The asteroid impact was removed, allowing non-avian dinosaurs to remain dominant across multiple ecosystems.",
+  "chunkGenerated": false,
+  "impactEntries": [
+    {
+      "key": "biodiversity",
+      "value": 0.35
+    },
+    {
+      "key": "population",
+      "value": 0.0
+    }
+  ],
+  "sourceScenarioIds": [
+    "no_dinosaur_extinction"
+  ]
+}

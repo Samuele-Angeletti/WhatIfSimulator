@@ -1,0 +1,116 @@
+{
+  "deployment_plan": [
+    {
+      "step": 1,
+      "name": "Pre-deployment",
+      "tasks": [
+        "Confirm the approved KAIROS artifacts for EPIC-00 and EPIC-01 are present and unchanged at .kairos/01-requirements.json through .kairos/05-test-verification.json.",
+        "Verify the milestone scope is limited to repo-root governance docs, schema contracts, example JSON, and Unity EditMode tests, with the Unity project rooted under WhatIfSimulator/.",
+        "Audit all newly added content under WhatIfSimulator/Assets/ for missing Unity .meta files and generate/commit the required .meta files before any merge.",
+        "Check that canonical contract and example paths exist under WhatIfSimulator/Assets/Data and that README.md and CONTRIBUTING.md point to the nested Unity project correctly.",
+        "Confirm no unapproved external dependencies were introduced and that WhatIfSimulator/Packages/manifest.json remains unchanged unless separately approved.",
+        "Prepare a merge checklist that blocks release readiness if either of the known high-severity review issues remains unresolved."
+      ]
+    },
+    {
+      "step": 2,
+      "name": "Merge Gates",
+      "tasks": [
+        "Require a clean diff review confirming the new foundation files are documentation, contracts, example JSON, tests, and Unity folder scaffolding only, with no unintended engine or gameplay implementation.",
+        "Require explicit closure of the missing .meta files finding by checking that every newly added Asset folder and file in WhatIfSimulator/Assets has a committed matching .meta file.",
+        "Require executed Unity EditMode test evidence from a real Unity environment because the current shell could not run the Unity CLI and .kairos/05-test-verification.json reports coverage_status FAIL and coverage_percentage 0.",
+        "Require attachment of test artifacts to the milestone record, at minimum Unity Test Runner results and a brief note stating Unity version, platform, and test mode used.",
+        "Require confirmation that example JSON still matches the documented schema contracts and JsonUtility-compatible shapes, including impactEntries arrays and discriminated scenario modification payloads.",
+        "Require maintainer confirmation that branch protection for master has been checked in GitHub settings as an out-of-repo action, even if enforcement is completed in parallel to the code merge."
+      ]
+    },
+    {
+      "step": 3,
+      "name": "Unity Verification",
+      "tasks": [
+        "Open the nested Unity project at WhatIfSimulator/ in the intended Unity editor version and allow a full asset import to complete.",
+        "Confirm Unity does not regenerate unexpected asset metadata, rename folders, or create new GUIDs for the newly added Core, Data, LLM, UI, and Tests trees.",
+        "Run the EditMode test suite from the Unity Test Runner for the new schema and governance tests and capture pass/fail output.",
+        "If Unity coverage tooling is available, collect coverage for the EditMode suite; if not available, record that limitation explicitly and still require executed test evidence.",
+        "Spot-check that the example JSON assets and contract documents remain in the expected folders after import and that no serialization or text asset issues appear in the Unity editor.",
+        "Review console output for import errors, missing references, or path issues tied to the nested project structure and resolve them before merge."
+      ]
+    },
+    {
+      "step": 4,
+      "name": "Merge And Rollout",
+      "tasks": [
+        "Merge only after the .meta file fix and Unity-executed test evidence are both present and reviewed by a maintainer.",
+        "Use the merge to establish README.md, CONTRIBUTING.md, .github/ISSUE_TEMPLATE, and WhatIfSimulator/Assets/Data as the canonical foundation for future contributor and contract work.",
+        "Tag or annotate the merge as the EPIC-00 and EPIC-01 foundation milestone so later work references this commit as the baseline contract surface.",
+        "Update any milestone or release notes to state that this is a repository foundation rollout for Unity/docs/schema readiness, not a production deployment.",
+        "Record the GitHub settings check result for master branch protection in the milestone notes so maintainers can verify the governance baseline outside the repository contents."
+      ]
+    },
+    {
+      "step": 5,
+      "name": "Post-merge Validation",
+      "tasks": [
+        "Re-open the merged branch or the default branch in Unity and confirm the project still imports cleanly from a fresh checkout.",
+        "Verify the canonical docs and examples are the versions visible on the default branch and that contributors can find the contract surface under WhatIfSimulator/Assets/Data without ambiguity.",
+        "Check that issue templates are active in GitHub and that branch protection on master reflects the intended maintainer policy.",
+        "Create follow-up issues for any remaining gaps, especially coverage tooling, future validator implementation, or any residual contract wording drift discovered during merge validation."
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Missing Unity .meta files for newly added Assets content causes regenerated GUIDs, unstable asset references, and inconsistent project state across machines.",
+      "detection": "Fresh Unity import creates unexpected new .meta files, changes GUIDs, or shows modified asset metadata immediately after checkout.",
+      "response": "Stop the merge, generate and commit the missing .meta files from Unity, re-run the import check, and only proceed once the asset tree is metadata-complete."
+    },
+    {
+      "risk": "The milestone is merged without real Unity test execution evidence, leaving the new EditMode tests and path assumptions unverified.",
+      "detection": "No Unity Test Runner result artifact is attached, .kairos/05-test-verification.json still reflects coverage_status FAIL with 0 coverage, or maintainers cannot state which Unity version executed the tests.",
+      "response": "Block merge readiness until a maintainer or contributor runs the nested WhatIfSimulator/ project in Unity, executes the EditMode suite, and records the results."
+    },
+    {
+      "risk": "Schema contracts, example JSON, and README terminology drift apart and create an unstable canonical foundation for later engine work.",
+      "detection": "Review finds mismatched field names, example payloads that do not match contract docs, or repo docs that reference incorrect paths outside WhatIfSimulator/Assets.",
+      "response": "Treat the drift as a release blocker, reconcile docs and examples in the same change set, and rerun the contract spot-check before merge."
+    },
+    {
+      "risk": "GitHub branch protection on master remains unset or inconsistent, weakening the governance baseline of the foundation milestone.",
+      "detection": "Maintainers cannot confirm the master protection rules in GitHub settings or the repository still permits bypassing the intended review workflow.",
+      "response": "Record the settings gap as an out-of-repo blocker or immediate follow-up owner task, and do not declare the governance rollout complete until the settings check is done."
+    },
+    {
+      "risk": "Unity import or test behavior differs because the project is nested under WhatIfSimulator/ and contributors open the wrong folder.",
+      "detection": "Unity opens at the repo root instead of WhatIfSimulator/, tests do not appear, or asset paths resolve incorrectly during verification.",
+      "response": "Use the nested project path explicitly in release notes and maintainer instructions, then re-run import and EditMode verification against WhatIfSimulator/."
+    }
+  ],
+  "rollback": {
+    "trigger": "Rollback if the merged foundation milestone causes Unity import failures, widespread .meta regeneration, broken schema/example contract integrity, or contributor-facing docs/contracts on the default branch are found to be materially incorrect after merge.",
+    "steps": [
+      "Revert the merge commit that introduced the EPIC-00 and EPIC-01 foundation milestone from the default branch.",
+      "Restore the last known good state of README.md, CONTRIBUTING.md, .github/ISSUE_TEMPLATE, and WhatIfSimulator/Assets/Data contract/example files.",
+      "Open the nested Unity project at WhatIfSimulator/ from a fresh checkout to confirm the rollback branch imports cleanly and no extra metadata churn remains.",
+      "Publish a maintainer note describing the rollback reason, with special attention to docs/contracts regressions or missing Unity asset metadata, and create a corrective follow-up branch."
+    ],
+    "estimated_time_minutes": 15
+  },
+  "monitoring": {
+    "metrics": [
+      "Unity EditMode test pass status for the nested WhatIfSimulator/ project",
+      "Presence of committed .meta files for all newly added files and folders under WhatIfSimulator/Assets",
+      "Fresh-checkout Unity import cleanliness with no unexpected regenerated metadata",
+      "Schema/example consistency across README.md, contract docs, and example JSON under WhatIfSimulator/Assets/Data",
+      "GitHub issue template availability on the default branch",
+      "Master branch protection confirmation in GitHub settings"
+    ],
+    "alert_thresholds": {
+      "unity_editmode_tests": "Alert if any EditMode test fails or if no executed Unity test artifact exists for the milestone.",
+      "asset_meta_completeness": "Alert if any newly added Asset file or folder is missing a committed .meta file.",
+      "unity_import_cleanliness": "Alert if a fresh Unity import produces unexpected file changes, regenerated .meta files, or import errors.",
+      "schema_contract_consistency": "Alert if any example JSON no longer matches its documented contract fields or documented canonical path.",
+      "github_issue_templates": "Alert if bug report, feature request, or library approval templates are not visible on the default branch.",
+      "branch_protection_check": "Alert if maintainers cannot confirm master branch protection settings at the time the milestone is declared canonical."
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "status": "NEEDS_FIXES",
+  "checks": {
+    "standards": "✗ FAIL",
+    "architecture": "✓ PASS",
+    "security": "✓ PASS",
+    "performance": "✓ PASS",
+    "testing": "✗ FAIL"
+  },
+  "issues": [
+    {
+      "severity": "high",
+      "category": "standards",
+      "description": "New Unity assets and folders were created without committed .meta files, so Unity will regenerate GUIDs on import and create unstable asset metadata across the new Core/Data/LLM/UI/Tests trees.",
+      "file": "WhatIfSimulator/Assets/Data/README.md",
+      "line": 1
+    },
+    {
+      "severity": "high",
+      "category": "testing",
+      "description": "The implementation summary shows coverage is unmeasured and both RED and GREEN phases are unverified, so the required test evidence for this KAIROS stage is missing.",
+      "file": ".kairos/03-implementation.json",
+      "line": 119
+    }
+  ]
+}
