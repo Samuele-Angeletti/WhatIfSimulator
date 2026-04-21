@@ -1,0 +1,60 @@
+{
+  "scope": "Implement EPIC-02 as the MVP simulation-engine foundation inside the Unity project at WhatIfSimulator/Assets/Core and WhatIfSimulator/Assets/Tests/EditMode. Included work is: a deterministic SimulationEngine that advances WorldState by one fixed tick; a seeded, loggable RNG wrapper used by engine code instead of ad hoc randomness; a fixed-timestep configuration/model for simulation advancement; a state transition logger that records the full serializable state for each tick; WorldState JSON load/save support using Unity JsonUtility and the repository's existing WorldState contract; and reproducibility coverage proving that identical seed + scenario + starting state inputs produce identical simulation outputs across repeated runs. Explicitly excluded from this epic are full population/economy/technology/conflict subsystem behavior, LLM integration, UI/timeline presentation, fast-forward chunk-resolution features beyond what is needed to preserve engine contracts, and any external serialization/testing/runtime dependency not already approved by the README policy.",
+  "constraints": {
+    "performance": "No explicit frame-time target is stated for MVP, but the engine loop and serialization path should stay lightweight enough for edit-mode tests and early runtime use. Full-state logging is required, so the design should keep per-tick allocations and log formatting simple and deterministic rather than optimized for production-scale throughput.",
+    "scale": "Initial scale is MVP-sized: one in-process deterministic engine, one serializable WorldState document, and reproducibility tests running over short tick sequences. The implementation should still leave clear extension points for future subsystem modules under Assets/Core/Systems without forcing a rewrite of the engine contract.",
+    "security": "Follow README rules: the simulation engine is the sole authority over outcomes, no LLM or external input may bypass validation to mutate simulation logic, no external libraries should be introduced, and deterministic behavior must be preserved for the same seed and inputs.",
+    "team": "Implementation must fit Unity/C# conventions already present in the repo, use built-in JsonUtility-compatible DTO shapes, and work with the existing EditMode NUnit test setup. The code should be understandable for contributors building later subsystems on top of EPIC-02.",
+    "timeline": "This is a Phase 1 MVP epic and a prerequisite for later subsystem work. The deliverable should favor a clean, dependable core over speculative abstractions or premature optimization."
+  },
+  "risks": [
+    {
+      "risk": "Determinism could be broken by hidden nondeterministic behavior such as direct use of UnityEngine.Random, DateTime/clock access, unordered collection traversal, or inconsistent serialization/log formatting.",
+      "impact": "high",
+      "mitigation": "Centralize randomness behind a dedicated seeded RNG wrapper, keep engine inputs explicit, prefer stable collection ordering, and write reproducibility tests that compare complete outputs across repeated runs."
+    },
+    {
+      "risk": "WorldState runtime classes could drift from the existing schema contracts and example JSON already defined in Assets/Data, causing loader/saver incompatibility.",
+      "impact": "high",
+      "mitigation": "Use the documented WorldState contract as the canonical shape, keep DTOs JsonUtility-friendly, and cover load/save round-trips in tests."
+    },
+    {
+      "risk": "Full-state logging every tick may create noisy, brittle output or unnecessary storage churn if the log format is not kept stable and serializable.",
+      "impact": "medium",
+      "mitigation": "Define a simple deterministic transition-log record format, log structured serializable snapshots rather than ad hoc text, and verify repeatability through tests instead of relying on human-readable formatting."
+    },
+    {
+      "risk": "The engine could become over-scoped by trying to implement real subsystem simulation behavior before the core execution contract is stable.",
+      "impact": "medium",
+      "mitigation": "Keep EPIC-02 focused on orchestration, state movement, reproducibility, and testability. Use minimal placeholder-safe integration points for future systems rather than implementing full domain logic now."
+    },
+    {
+      "risk": "Fixed-timestep behavior may be designed too tightly around real-time gameplay assumptions, making future fast-forward/chunk processing harder to add.",
+      "impact": "medium",
+      "mitigation": "Model ticking as deterministic step advancement over state with an explicit timestep configuration, so coarse and fine simulation modes can later share the same core contract."
+    },
+    {
+      "risk": "Tests may accidentally prove only superficial equality, missing deeper divergence in state or logs.",
+      "impact": "medium",
+      "mitigation": "Compare full serialized outputs, transition logs, and final state across repeated runs with the same seed and inputs, and add a negative-control test where different seeds or starting conditions produce different outputs when appropriate."
+    }
+  ],
+  "success_criteria": [
+    "A SimulationEngine implementation exists under the Unity project and can advance a WorldState by exactly one deterministic tick.",
+    "Engine randomness flows through a seeded wrapper that is reproducible and suitable for logging/debugging.",
+    "A fixed-timestep model/configuration exists and is used by engine advancement logic rather than relying on wall-clock time.",
+    "WorldState can be loaded from and saved to JSON using Unity JsonUtility-compatible structures aligned with the existing repository contracts.",
+    "Each simulation tick can emit a deterministic state transition log capturing the full state snapshot or equivalent complete serializable record.",
+    "EditMode tests demonstrate that two runs with the same seed, scenario set, starting state, and tick count produce identical serialized outputs and logs.",
+    "EditMode tests cover the required reproducibility contract called out in EPIC-02 and fail if deterministic behavior regresses.",
+    "The implementation introduces no unapproved external dependencies and stays aligned with README.md as the project source of truth."
+  ],
+  "integration_points": [
+    "WhatIfSimulator/Assets/Core as the canonical home for SimulationEngine, tick orchestration, and deterministic runtime utilities",
+    "WhatIfSimulator/Assets/Data/WorldStates and the existing WorldState schema/example files, which define the JSON contract loader/saver behavior must respect",
+    "WhatIfSimulator/Assets/Data/Contracts/WorldState.schema.md and SchemaValidationRules.md, which provide the state-shape and determinism vocabulary",
+    "WhatIfSimulator/Assets/Tests/EditMode, where reproducibility and serialization tests should live alongside the existing contract tests",
+    "Future subsystem folders under WhatIfSimulator/Assets/Core/Systems for population, economy, technology, and conflict, which the engine should be able to orchestrate later",
+    "README.md sections on Simulation First, determinism, fixed timestep, and reproducibility, which define the non-negotiable behavior of the engine core"
+  ]
+}

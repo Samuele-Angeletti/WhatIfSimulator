@@ -1,0 +1,97 @@
+{
+  "deployment_plan": [
+    {
+      "step": 1,
+      "name": "Pre-deployment",
+      "tasks": [
+        "Confirm `.kairos/01-epic-02-requirements.json` through `.kairos/05-epic-02-test-verification.json` are present and approved.",
+        "Run the Unity EditMode suite again with the batch runner and require a clean `24/24` pass before merge.",
+        "Review the known test-verification gaps and decide whether EPIC-02 is being released as an internal foundation milestone or held for added guard-path coverage.",
+        "Verify no unapproved external dependencies were introduced and that all new files remain under `WhatIfSimulator/Assets/Core`, `Assets/Editor`, and `Assets/Tests/EditMode`."
+      ]
+    },
+    {
+      "step": 2,
+      "name": "Staging deployment",
+      "tasks": [
+        "Merge EPIC-02 into a staging or integration branch used for Unity editor validation.",
+        "Open the project in the target Unity version and validate script compilation, asmdef resolution, and edit-mode test execution on a clean checkout.",
+        "Load `Assets/Data/WorldStates/world-state.example.json` through the new runtime path and confirm deterministic re-runs produce identical serialized outputs and transition logs.",
+        "Have the next subsystem implementer smoke-test extension points by wiring a trivial `ISimulationSystem` into `SimulationEngine`."
+      ]
+    },
+    {
+      "step": 3,
+      "name": "Production canary (10%)",
+      "tasks": [
+        "Roll EPIC-02 to a limited internal audience first: one branch or one teammate workflow that depends on the simulation core.",
+        "Use only a small set of deterministic scenarios and short tick runs during the canary period.",
+        "Track whether contributors can consume `SimulationEngine`, `WorldStateJsonStore`, and `DeterministicRandom` without contract confusion or editor/test instability.",
+        "Block broader rollout if any deterministic mismatch, schema incompatibility, or Unity test-runner regression appears."
+      ]
+    },
+    {
+      "step": 4,
+      "name": "Full rollout",
+      "tasks": [
+        "Promote EPIC-02 to the mainline branch once the canary window is clean and no determinism regressions are observed.",
+        "Announce the new engine contracts to subsystem contributors: `WorldState`, `ISimulationSystem`, fixed timestep settings, transition logging, and seeded RNG usage.",
+        "Use EPIC-02 as the required foundation for subsequent subsystem epics under `Assets/Core/Systems`.",
+        "Schedule follow-up work for the uncovered test gaps and optional coverage-report tooling."
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Deterministic behavior regresses when future subsystem code uses non-seeded randomness, wall-clock time, or unstable collection ordering.",
+      "detection": "Repeated runs with the same seed stop producing identical final-state JSON, transition logs, or RNG snapshots in EditMode tests.",
+      "response": "Stop rollout, isolate the offending subsystem change, restore seeded RNG and explicit inputs only, and rerun reproducibility tests before re-promoting."
+    },
+    {
+      "risk": "WorldState contract drift breaks compatibility with `Assets/Data/WorldStates/world-state.example.json` or future scenario data.",
+      "detection": "Json load failures, schema-validation test failures, or missing required fields during staging validation.",
+      "response": "Rollback the contract change, realign runtime DTOs with the documented schema, and add regression coverage before retrying release."
+    },
+    {
+      "risk": "The custom Unity batch test runner becomes brittle across Unity/editor API changes.",
+      "detection": "Batch verification stops producing results, exits without completion, or reports runner-level failures in staging.",
+      "response": "Keep the rollout internal, patch the editor runner first, and do not promote until automated EditMode verification is stable again."
+    },
+    {
+      "risk": "Untested guard paths hide runtime faults despite the main suite passing.",
+      "detection": "Null-argument exceptions, file-path failures, or invalid-range errors appear during downstream subsystem integration.",
+      "response": "Add the missing tests identified in `.kairos/05-epic-02-test-verification.json`, patch the affected API behavior, and rerun the full suite."
+    },
+    {
+      "risk": "Per-tick full-state logging creates larger-than-expected allocation or file-output overhead once more systems are added.",
+      "detection": "100-tick staging runs exceed the architecture target or editor responsiveness drops during repeated deterministic runs.",
+      "response": "Keep the JSON snapshot contract but optimize logger storage strategy, batching, or optional persistence boundaries without changing deterministic output."
+    }
+  ],
+  "rollback": {
+    "trigger": "Rollback if EditMode tests fail after merge, deterministic re-runs diverge for identical seeds and inputs, world-state JSON compatibility breaks, or downstream subsystem teams are blocked by the EPIC-02 contracts.",
+    "steps": [
+      "Revert the EPIC-02 merge commit or remove the EPIC-02 file set from the integration branch.",
+      "Restore the prior test assembly configuration if the new asmdef wiring is part of the failure.",
+      "Re-run the pre-EPIC-02 EditMode suite and confirm the project returns to the previous green baseline.",
+      "Log the failure cause in the next KAIROS cycle and reopen implementation with the specific regression details."
+    ],
+    "estimated_time_minutes": 15
+  },
+  "monitoring": {
+    "metrics": [
+      "Unity EditMode pass/fail count",
+      "Deterministic reproducibility result for same-seed repeated runs",
+      "WorldState JSON load/save success rate in staging validation",
+      "Simulation tick execution time for 100-tick minimal runs",
+      "Contributor-reported integration issues against `ISimulationSystem` and `WorldState` contracts"
+    ],
+    "alert_thresholds": {
+      "unity_editmode_failures": "> 0 failures blocks rollout",
+      "deterministic_mismatch": "any mismatch between same-seed repeated runs blocks rollout",
+      "worldstate_load_failures": "> 0 failures for canonical example blocks rollout",
+      "tick_runtime_target": "> 100 ms for a 100-tick minimal run requires investigation before broader rollout",
+      "integration_blockers": "any blocker reported by subsystem implementers during canary pauses promotion to full rollout"
+    }
+  }
+}

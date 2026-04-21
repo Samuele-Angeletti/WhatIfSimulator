@@ -1,0 +1,140 @@
+{
+  "selected_option": "Option B: dedicated deterministic core assembly with serializable world-state models, an inspectable custom RNG, and text-based transition logging",
+  "rationale": "Option A would keep everything in Assembly-CSharp with minimal structure, which is faster to start but makes test boundaries and future subsystem composition murkier. Option C would push too far into a scene-driven or over-abstracted engine before the project has real subsystem behavior. Option B fits the repo best: it keeps EPIC-02 focused on a small, testable runtime core under Assets/Core, aligns with the existing JSON contracts in Assets/Data, gives EditMode tests a stable assembly to reference, and strengthens determinism by using a repo-owned RNG algorithm rather than hidden engine/runtime randomness.",
+  "technology_choices": [
+    {
+      "component": "Runtime assembly boundary",
+      "choice": "Add a dedicated runtime asmdef under `WhatIfSimulator/Assets/Core` and reference it from `WhatIfSimulator/Assets/Tests/EditMode/WhatIfSimulator.EditModeTests.asmdef`",
+      "why": "Creates a clean seam between engine runtime code and EditMode tests instead of leaving everything in `Assembly-CSharp`."
+    },
+    {
+      "component": "World state model",
+      "choice": "Create `[Serializable]` runtime DTO-style classes that mirror the established `WorldState` contract shape",
+      "why": "Keeps `JsonUtility` support straightforward and avoids divergence from the schema/example files already in the repo."
+    },
+    {
+      "component": "Fixed timestep model",
+      "choice": "Represent the timestep as an explicit integer timestamp delta per tick, e.g. `timestampStep`",
+      "why": "Matches the existing integer timeline model (`currentTimestamp`) and avoids floating-point drift in the MVP engine core."
+    },
+    {
+      "component": "Randomness",
+      "choice": "Implement a custom deterministic PRNG with explicit internal state and snapshot support instead of relying on `UnityEngine.Random` or opaque `System.Random` state",
+      "why": "Makes the random stream reproducible, inspectable, and loggable across test runs."
+    },
+    {
+      "component": "Engine orchestration",
+      "choice": "Use a plain C# `SimulationEngine` service plus a lightweight `ISimulationSystem` interface for future subsystem hooks",
+      "why": "Supports MVP orchestration now while leaving a clean path for population/economy/technology/conflict systems later."
+    },
+    {
+      "component": "State transition logging",
+      "choice": "Log per-tick structured records that store tick metadata, RNG snapshot, and the full serialized `WorldState` JSON snapshot",
+      "why": "A serialized snapshot is deterministic, easy to compare in tests, and avoids object-aliasing bugs from mutable state references."
+    },
+    {
+      "component": "Serialization",
+      "choice": "Implement a `WorldStateJsonStore` with `TryLoad`/`ToJson`/file helper methods using `JsonUtility`",
+      "why": "Separates file/text concerns from engine logic and stays aligned with the repo's approved serialization policy."
+    },
+    {
+      "component": "Testing strategy",
+      "choice": "Add EditMode NUnit tests for RNG determinism, world-state load/save round-trip, single-tick advancement, and repeated-run reproducibility",
+      "why": "EPIC-02's main risk is silent determinism regression, so the architecture needs direct, focused tests around those contracts."
+    }
+  ],
+  "integration_points": {
+    "with_system_1": "Place runtime code under `WhatIfSimulator/Assets/Core` as the canonical engine home described by `Assets/Core/README.md`.",
+    "with_system_2": "Keep `WorldState` runtime classes and JSON serialization aligned with `WhatIfSimulator/Assets/Data/Contracts/WorldState.schema.md` and `Assets/Data/WorldStates/world-state.example.json`.",
+    "with_system_3": "Update `WhatIfSimulator/Assets/Tests/EditMode/WhatIfSimulator.EditModeTests.asmdef` so EditMode tests can reference the new core assembly directly.",
+    "with_system_4": "Design `SimulationEngine` around an `ISimulationSystem` list so future subsystem implementations under `Assets/Core/Systems` can be plugged in without rewriting the engine loop.",
+    "with_system_5": "Use deterministic transition logs as the comparison surface for reproducibility tests required by `Tasks/EPIC-02.md` and the README determinism section.",
+    "with_system_6": "Keep loader/saver behavior compatible with the existing schema-contract tests already validating `JsonUtility`-friendly data shapes in `Assets/Tests/EditMode`."
+  },
+  "database_changes": {
+    "new_tables": [],
+    "modified_tables": []
+  },
+  "api_contracts": {
+    "SimulationEngine.AdvanceOneTick": {
+      "request": {
+        "worldState": "WorldState",
+        "tickSettings": "SimulationTickSettings { timestampStep: int }",
+        "systems": "ISimulationSystem[]",
+        "random": "DeterministicRandom",
+        "logger": "ISimulationStateLogger"
+      },
+      "response": {
+        "worldState": "WorldState",
+        "tickResult": "SimulationTickResult { tickIndex: int, timestamp: int, randomCallsConsumed: int }"
+      }
+    },
+    "SimulationEngine.RunTicks": {
+      "request": {
+        "initialState": "WorldState",
+        "tickCount": "int >= 0",
+        "tickSettings": "SimulationTickSettings",
+        "systems": "ISimulationSystem[]"
+      },
+      "response": {
+        "finalState": "WorldState",
+        "transitionLog": "SimulationTransitionLog",
+        "finalRandomSnapshot": "DeterministicRandomSnapshot"
+      }
+    },
+    "ISimulationSystem.Apply": {
+      "request": {
+        "worldState": "WorldState",
+        "context": "SimulationTickContext { tickIndex: int, timestampStep: int, random: DeterministicRandom }"
+      },
+      "response": {
+        "effect": "mutates the provided WorldState deterministically"
+      }
+    },
+    "WorldStateJsonStore.TryLoadFromJson": {
+      "request": {
+        "json": "string"
+      },
+      "response": {
+        "success": "bool",
+        "worldState": "WorldState when valid",
+        "errorCode": "string when invalid",
+        "message": "human-readable validation/deserialization failure"
+      }
+    },
+    "WorldStateJsonStore.ToJson": {
+      "request": {
+        "worldState": "WorldState",
+        "prettyPrint": "bool"
+      },
+      "response": {
+        "json": "JsonUtility-compatible JSON string"
+      }
+    },
+    "ISimulationStateLogger.Record": {
+      "request": {
+        "record": "SimulationTransitionRecord { tick: int, timestamp: int, worldStateJson: string, randomSnapshot: DeterministicRandomSnapshot }"
+      },
+      "response": {
+        "effect": "appends deterministic record to in-memory transition log"
+      }
+    }
+  },
+  "error_codes": [
+    "ENGINE_NULL_WORLD_STATE",
+    "ENGINE_INVALID_TICK_COUNT",
+    "ENGINE_INVALID_TIMESTAMP_STEP",
+    "WORLDSTATE_JSON_EMPTY",
+    "WORLDSTATE_DESERIALIZATION_FAILED",
+    "WORLDSTATE_SCHEMA_VERSION_MISSING",
+    "WORLDSTATE_REGION_COLLECTION_EMPTY",
+    "WORLDSTATE_DUPLICATE_REGION_ID",
+    "RNG_INVALID_SEED",
+    "TRANSITION_LOG_NULL_RECORD"
+  ],
+  "error_handling": "Use guard-clause exceptions for programmer misuse inside engine entry points (`ArgumentNullException`, `ArgumentOutOfRangeException`) and use explicit result objects for content-loading failures in `WorldStateJsonStore.TryLoadFromJson`. Determinism tests should compare serialized final state, transition-log entries, and RNG snapshots rather than relying on object reference equality.",
+  "performance_targets": {
+    "latency_ms": "For MVP EditMode usage, a 100-tick run with no-op or minimal systems should complete comfortably under 100 ms on a typical developer machine.",
+    "throughput_rps": "Not HTTP-based; target at least 1000 deterministic ticks per second in EditMode for minimal test scenarios."
+  }
+}

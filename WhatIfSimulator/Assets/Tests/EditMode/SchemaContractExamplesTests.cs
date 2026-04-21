@@ -99,11 +99,11 @@ namespace WhatIfSimulator.Tests.EditMode
         private static int CountPayloads(ScenarioModificationContractDto modification)
         {
             var payloadCount = 0;
-            payloadCount += modification.removeEvent != null ? 1 : 0;
-            payloadCount += modification.addEvent != null ? 1 : 0;
-            payloadCount += modification.modifyParameter != null ? 1 : 0;
-            payloadCount += modification.injectRule != null ? 1 : 0;
-            payloadCount += modification.alterInitialConditions != null ? 1 : 0;
+            payloadCount += modification.removeEvent != null && !string.IsNullOrWhiteSpace(modification.removeEvent.targetEventId) ? 1 : 0;
+            payloadCount += modification.addEvent != null && !string.IsNullOrWhiteSpace(modification.addEvent.eventId) ? 1 : 0;
+            payloadCount += modification.modifyParameter != null && !string.IsNullOrWhiteSpace(modification.modifyParameter.parameterId) ? 1 : 0;
+            payloadCount += modification.injectRule != null && !string.IsNullOrWhiteSpace(modification.injectRule.ruleId) ? 1 : 0;
+            payloadCount += modification.alterInitialConditions != null && !string.IsNullOrWhiteSpace(modification.alterInitialConditions.conditionId) ? 1 : 0;
             return payloadCount;
         }
 

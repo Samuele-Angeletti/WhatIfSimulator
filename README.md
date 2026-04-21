@@ -351,7 +351,7 @@ No pull request that introduces an unapproved external dependency will be merged
 ## Project Structure
 
 ```
-/Core
+WhatIfSimulator/Assets/Core
     SimulationEngine.cs
     Systems/
         Population/
@@ -359,16 +359,16 @@ No pull request that introduces an unapproved external dependency will be merged
         Technology/
         Conflict/
 
-/Data
+WhatIfSimulator/Assets/Data
     WhatIf/          ← scenario definition files
     Events/          ← event templates
     Actions/         ← action schemas
 
-/LLM
+WhatIfSimulator/Assets/LLM
     Interpreter/     ← natural language → action
     Narrator/        ← state → narrative text
 
-/UI
+WhatIfSimulator/Assets/UI
     TimelineView/
     EventFeed/
 ```

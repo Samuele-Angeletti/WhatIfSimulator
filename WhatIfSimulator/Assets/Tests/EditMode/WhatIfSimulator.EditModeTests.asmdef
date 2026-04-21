@@ -1,7 +1,9 @@
 {
   "name": "WhatIfSimulator.EditModeTests",
   "rootNamespace": "WhatIfSimulator.Tests.EditMode",
-  "references": [],
+  "references": [
+    "WhatIfSimulator.Core"
+  ],
   "includePlatforms": [
     "Editor"
   ],
