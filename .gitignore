@@ -58,3 +58,4 @@ sysinfo.txt
 # Crashlytics generated file
 *.mp4
 *.dwlt
+create_issues_gh.ps1
